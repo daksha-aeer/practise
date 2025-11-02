@@ -1,4 +1,8 @@
-let time = document.getElementById("time");
+const time = document.getElementById("time");
+const goalLabel = document.getElementById("goal-label");
+const goalInput = document.getElementById("goal-input");
+const goalButton = document.getElementById("submit-goal-button");
+const goalDisplay = document.getElementById("goal-value");
 
 function displayDate(){
     const now = new Date();
@@ -7,30 +11,30 @@ function displayDate(){
 
 let timerId = setInterval(displayDate, 1000);
 
+const savedGoal = localStorage.getItem("goal")
 
-let submitGoal = document.getElementById("submit-goal");
-let setGoal = document.getElementById("goal-value")
-let existingGoal = localStorage.getItem("goal")
+function goalExists() {
+    goalLabel.style.display = "none";
+    goalInput.style.display = "none";
+    goalButton.style.display = "none";
 
-document.getElementById("goal").addEventListener("keydown", function (e){
-    if (e.key == "Enter") {
-        storeGoal();
-    }
-})
+    goalDisplay.textContent = "Today's goal: " + savedGoal;
+    const resetButton = document.createElement("button");
 
-submitGoal.addEventListener("click", storeGoal);
+    resetButton.textContent = "Reset Goal";
+    resetButton.id = "reset-goal";
 
-function storeGoal(){
-    goalValue = document.getElementById("goal").value;
-    setGoal.textContent = "Today's focus: "+ goalValue;
-    localStorage.setItem("goal", goalValue)
+    resetButton.addEventListener("click", localStorage.removeItem("goal"));
+    goalDisplay.appendChild(resetButton);
 }
 
-if (existingGoal) {
-    console.log("existing goal: " + existingGoal)
-    setGoal.textContent = "Today's focus: "+ existingGoal;
-    const reset = document.createElement("button")
+if (savedGoal) {
+    goalExists();
 }
 else {
-
+    goalInput.addEventListener("keydown", function(e){
+        if (e.key == "Enter") {
+            localStorage.setItem("goal", goalInput.value);
+        }
+    })
 }

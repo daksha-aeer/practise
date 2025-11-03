@@ -17,24 +17,50 @@ function goalExists() {
     goalLabel.style.display = "none";
     goalInput.style.display = "none";
     goalButton.style.display = "none";
+    goalDisplay.style.display = "";
+    
+    const newGoal = localStorage.getItem("goal")
+    console.log(newGoal)
 
-    goalDisplay.textContent = "Today's goal: " + savedGoal;
+    goalDisplay.textContent = "Today's goal: " + newGoal;
     const resetButton = document.createElement("button");
 
     resetButton.textContent = "Reset Goal";
     resetButton.id = "reset-goal";
 
-    resetButton.addEventListener("click", localStorage.removeItem("goal"));
+    resetButton.addEventListener("click", () => {
+        localStorage.removeItem("goal");
+        showGoalInput();
+    });
     goalDisplay.appendChild(resetButton);
+}
+
+function showGoalInput() {
+    goalLabel.style.display = "";
+    goalInput.style.display = "";
+    goalButton.style.display = "";
+    goalInput.value = "";
+    goalDisplay.style.display = "none";
+}
+
+function storeGoal() {
+    localStorage.setItem("goal", goalInput.value);
 }
 
 if (savedGoal) {
     goalExists();
 }
 else {
+    console.log("goal doesnt exist")
     goalInput.addEventListener("keydown", function(e){
         if (e.key == "Enter") {
-            localStorage.setItem("goal", goalInput.value);
+            storeGoal();
+            goalExists();
         }
+    })
+
+    goalButton.addEventListener("click", () => {
+        storeGoal();
+        goalExists()
     })
 }

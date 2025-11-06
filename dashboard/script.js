@@ -3,6 +3,12 @@ const goalLabel = document.getElementById("goal-label");
 const goalInput = document.getElementById("goal-input");
 const goalButton = document.getElementById("submit-goal-button");
 const goalDisplay = document.getElementById("goal-value");
+const temp = document.getElementById("temp");
+const condition = document.getElementById("condition");
+const loc = document.getElementById("location");
+const photographer = document.getElementById("photographer")
+const WEATHER_API = "";
+const ACCESS_KEY = "";
 
 function displayDate(){
     const now = new Date();
@@ -45,6 +51,7 @@ function showGoalInput() {
 
 function storeGoal() {
     localStorage.setItem("goal", goalInput.value);
+    console.log(goalInput.value)
 }
 
 if (savedGoal) {
@@ -64,3 +71,44 @@ else {
         goalExists()
     })
 }
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(showPosition);
+} else { 
+  console.log("Geolocation is not supported by this browser");
+}
+
+async function showPosition(position) {
+    coordinates = position.coords
+    console.log("Latitude: " + coordinates.latitude)
+    console.log("Longitude: " + coordinates.longitude)
+
+    try {
+        const weather = await fetch(`https://api.weatherapi.com/v1/current.json?key=${WEATHER_API}&q=${coordinates.latitude},${coordinates.longitude}&aqi=yes`).then(r => r.json())
+        // console.log(weather)
+        console.log(weather.current.condition.text)
+        console.log(weather.current.temp_c)
+        // console.log(weather.location.name)
+        condition.textContent = weather.current.condition.text
+        temp.textContent = weather.current.temp_c
+        loc.textContent = weather.location.name
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function getImage() {
+    const image = await fetch(`https://api.unsplash.com/photos/random/?client_id=${ACCESS_KEY}&orientation=landscape&query=nature`).then(r => r.json())
+    // const id = image.id
+    console.log(image)
+    console.log(image.urls.regular)
+    document.body.style.backgroundImage = `url(${image.urls.regular})`
+    photographer.textContent = "Photographer: " + image.user.name
+    // document.body.style.backgroundSize = "cover"
+    // document.body.style.backgroundRepeat = "no-repeat"
+    // document.body.style.height = '100vh';
+    // document.body.style.backgroundPosition = 'center';
+}
+
+getImage()
